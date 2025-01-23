@@ -1,4 +1,4 @@
-# Add 2 Integers in Compute Kernel
+# Add 2 Integers in a Compute Kernel
 
 In this example, we will build a TT-Metal program that will add two vectors containing integers together, using data movement and compute kernels.
 
