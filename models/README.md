@@ -1,5 +1,9 @@
 <div align="center">
 
-<img src="./docs/source/common/images/favicon.png" alt="ttnn logo" height="180"/>
+<img src="https://github.com/tenstorrent/tt-metal/blob/main/docs/source/common/images/favicon.png" width="180" height="180" />
 
-Welcome to Tenstorrent's Training Repository!
+<h1>
+
+Models Training Material
+
+</h1>
