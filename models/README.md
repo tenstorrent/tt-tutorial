@@ -7,3 +7,7 @@
 Models Training Material
 
 </h1>
+</div>
+
+## Tutorials
+- [Model Bring-Up](https://github.com/tenstorrent/tt-training/blob/main/models/Model_Bring_Up.md)
