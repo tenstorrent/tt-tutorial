@@ -11,3 +11,6 @@ Models Training Material
 
 ## Tutorials
 - [Model Bring-Up](https://github.com/tenstorrent/tt-training/blob/main/models/Model_Bring_Up.md)
+
+## Model Optimization
+- [Advanced Performance Optimizations for Models](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/AdvancedPerformanceOptimizationsForModels/AdvancedPerformanceOptimizationsForModels.md)
