@@ -14,3 +14,6 @@ Models Training Material
 
 ## Model Optimization
 - [Advanced Performance Optimizations for Models](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/AdvancedPerformanceOptimizationsForModels/AdvancedPerformanceOptimizationsForModels.md)
+
+## Tech Reports
+- [Convolution Networks on Tenstorrent Chips](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/CNNs/ttcnn.md)
