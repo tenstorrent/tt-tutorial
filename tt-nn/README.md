@@ -15,6 +15,7 @@ TT-NN Training Material
 - [YOLOv4 on TT-NN](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/YoloV4-TTNN/yolov4.md)
 - [Matrix Multiply FLOPS](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/GEMM_FLOPS/GEMM_FLOPS.md)
 - [CNN Bring-up & Optimization in TT-NN](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/CNNs/cnn_optimizations.md)
+- [Programming Mesh of Devices with TT-NN](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/Programming_Mesh_of_Devices/Programming_Mesh_of_Devices_with_TT-NN.md)
 
 ## TT-NN Tutorials
 - [Tensor and Add Operation](https://github.com/tenstorrent/tt-metal/blob/main/ttnn/tutorials/001.ipynb)
