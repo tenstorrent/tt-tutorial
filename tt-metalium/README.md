@@ -25,3 +25,12 @@ TT-Metalium Training Material
 - [FlashAttention on Tentorrent's Wormhole Architecture](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/FlashAttention/FlashAttention.md)
 - [FlashDecode on Tenstorrent's Wormhole Architecture](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/FlashAttention/FlashDecode.md)
 - [Handling Infinity, NaN and denormal numbers in Tensix compute](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/Handling_Special_Value/special_values.md)
+- [Saturating DRAM bandwidth](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/Saturating_DRAM_bandwidth/Saturating_DRAM_bandwidth.md)
+- [Sub-Devices](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/SubDevices/SubDevices.md)
+- [TT-Metalium Distributed](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/TT-Distributed/TT-Distributed-Architecture-1219.md)
+- [TT-Fabric Architecture Specification](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/TT-Fabric/TT-Fabric-Architecture.md)
+- [Data Formats](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/data_formats/data_formats.md
+- [Reconfiguring Hardware for Different Data Formats](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/data_formats/reconfig_data_format.md)
+- [Matrix Engine](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/matrix_engine/matrix_engine.md)
+- [Allocator](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/memory/allocator.md)
+- [Tensor and Memory Layouts](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/tensor_layouts/tensor_layouts.md)
