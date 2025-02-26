@@ -29,7 +29,7 @@ TT-Metalium Training Material
 - [Sub-Devices](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/SubDevices/SubDevices.md)
 - [TT-Metalium Distributed](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/TT-Distributed/TT-Distributed-Architecture-1219.md)
 - [TT-Fabric Architecture Specification](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/TT-Fabric/TT-Fabric-Architecture.md)
-- [Data Formats](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/data_formats/data_formats.md
+- [Data Formats](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/data_formats/data_formats.md)
 - [Reconfiguring Hardware for Different Data Formats](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/data_formats/reconfig_data_format.md)
 - [Matrix Engine](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/matrix_engine/matrix_engine.md)
 - [Allocator](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/memory/allocator.md)
