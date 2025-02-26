@@ -9,6 +9,9 @@ TT-NN Training Material
 </h1>
 </div>
 
+## White Paper
+- [TT-NN](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/ttnn/ttnn.md)
+
 ## TT-NN Tech Reports
 - [Vision Transformer on TT-NN](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/ViT-TTNN/vit.md)
 - [LLMs Bringup on TT-NN](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/LLMs/llms.md)
@@ -16,6 +19,8 @@ TT-NN Training Material
 - [Matrix Multiply FLOPS](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/GEMM_FLOPS/GEMM_FLOPS.md)
 - [CNN Bring-up & Optimization in TT-NN](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/CNNs/cnn_optimizations.md)
 - [Programming Mesh of Devices with TT-NN](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/Programming_Mesh_of_Devices/Programming_Mesh_of_Devices_with_TT-NN.md)
+- [TT-NN Comparison Mode](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/ttnn/comparison-mode.md)
+- [TT-NN Graph Trace](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/ttnn/graph-tracing.md)
 
 ## TT-NN Tutorials
 - [Tensor and Add Operation](https://github.com/tenstorrent/tt-metal/blob/main/ttnn/tutorials/001.ipynb)
