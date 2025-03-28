@@ -4,7 +4,7 @@
 
 <h1>
 
-TT-NN Training Material
+TT-NN Tutorial Material
 
 </h1>
 </div>
