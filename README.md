@@ -4,7 +4,7 @@
 
 <h1>
 
-Welcome to Tenstorrent's Training Repository!
+Welcome to Tenstorrent's Tutorial Repository!
 
 </h1>
 
