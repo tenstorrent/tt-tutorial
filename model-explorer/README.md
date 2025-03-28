@@ -4,7 +4,7 @@
 
 <h1>
 
-Model Explorer Training Material
+Model Explorer Tutorial Material
 
 </h1>
 </div>
