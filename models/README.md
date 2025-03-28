@@ -4,7 +4,7 @@
 
 <h1>
 
-Models Training Material
+Models Tutorial Material
 
 </h1>
 </div>
