@@ -4,7 +4,7 @@
 
 <h1>
 
-Operations Training Material
+Operations Tutorial Material
 
 </h1>
 </div>
