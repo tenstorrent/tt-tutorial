@@ -4,7 +4,7 @@
 
 <h1>
 
-TT-Metalium Training Material
+TT-Metalium Tutorial Material
 
 </h1>
 </div>
