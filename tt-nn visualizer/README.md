@@ -4,7 +4,7 @@
 
 <h1>
 
-TT-NN Visualizer Training Material
+TT-NN Visualizer Tutorial Material
 
 </h1>
 </div>
