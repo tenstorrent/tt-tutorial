@@ -9,6 +9,8 @@ TT-NN Tutorial Material
 </h1>
 </div>
 
+TT-NN is a Python and C++ neural network OP library.
+
 ## White Paper
 - [TT-NN](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/ttnn/ttnn.md)
 
