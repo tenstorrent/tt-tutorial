@@ -9,6 +9,8 @@ Models Tutorial Material
 </h1>
 </div>
 
+Tenstorrent has dozen's on functional models running on Tenstorrent hardware. Find tutorial and training material here for model bring-up, optimization, and more.
+
 ## Tutorials
 - [Model Bring-Up](https://github.com/tenstorrent/tt-metal/blob/main/models/model_bring_up.md)
 
