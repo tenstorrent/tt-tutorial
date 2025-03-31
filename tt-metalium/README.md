@@ -9,6 +9,8 @@ TT-Metalium Tutorial Material
 </h1>
 </div>
 
+TT-Metalium is Tenstorrent's low-level programming model enabling kernel development for Tenstorrent hardware.
+
 ## White Paper
 - [TT-Metalium For Beginners](https://github.com/tenstorrent/tt-training/blob/main/tt-metalium/TT-Metalium_For_Beginners.md)
 
