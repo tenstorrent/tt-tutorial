@@ -10,7 +10,9 @@ Welcome to Tenstorrent's Tutorial Repository!
 
 </div>
 
-Find training material on various Tenstorrent subjects:
+The TT-Tutorial repository provides introductory material for Tenstorrent software, hardware, and IP. Learn about Models, Metalium, TT Architecture, and more.
+
+Find tutorial and training material on various Tenstorrent subjects:
 
 - [Model-Explorer](https://github.com/tenstorrent/tt-training/tree/main/model-explorer)
 - [Models](https://github.com/tenstorrent/tt-training/tree/main/models)
