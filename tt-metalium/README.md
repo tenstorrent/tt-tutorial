@@ -22,6 +22,7 @@ TT-Metalium is Tenstorrent's low-level programming model enabling kernel develop
 - [Add 2 Integers in RISC-V](https://github.com/tenstorrent/tt-training/blob/main/tt-metalium/prog_examples/add_2_integers_in_riscv.md)
 
 ## Tech Reports
+- [Galaxy Wormhole 6U Software Guide](https://github.com/tenstorrent/tt-metal/blob/main/docs/source/tech_reports/WH_Galaxy/Galaxy_WH_6U_SW_Guide.md)
 - [Basic Ethernet Multichip](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/EthernetMultichip/BasicEthernetGuide.md)
 - [Collective Communication Library (CCL)](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/EthernetMultichip/CclDeveloperGuide.md)
 - [FlashAttention on Tentorrent's Wormhole Architecture](https://github.com/tenstorrent/tt-metal/blob/main/tech_reports/FlashAttention/FlashAttention.md)
