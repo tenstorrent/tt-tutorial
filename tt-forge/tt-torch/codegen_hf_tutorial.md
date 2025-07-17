@@ -123,3 +123,8 @@ demos/tt-torch/hug_codegen.py
 def hello_world():
     print("Hello, world!")
 ```
+
+## Additional Resources
+If you want to learn more about working with TT-Torch, see the following resources:
+* [TT-Torch Docs Pages](https://docs.tenstorrent.com/tt-torch/)
+* [TT-Forge Repo with Demos for TT-Torch](https://github.com/tenstorrent/tt-forge/tree/main/demos/tt-torch)
