@@ -45,7 +45,7 @@ In the next section, the code is converted for use with Tenstorrent and TT-Torch
 This section takes the code sample from the last section and shows you what changes need to be made for use with Tenstorrent hardware and the TT-Torch frontend. The key changes are: 
 
 * `tokenizer.pad_token_id` is set - This ensures the input is all of the same fixed length. Without this change, every time input of a different length is encountered, it triggers a recompile. When the max number of recompilations is reached, the compiler will give up on compiling the function, resulting in a warning message. The model still runs, but in eager mode, which is much slower. 
-* `torch.bfloat16` - TT-Torch is designed for Tenstorrent hardware, which is optimized for `bfloat16`. It offers the same dynamic range as `float32`, with much faster performance on Tenstorrent hardware and lower bandwidth and memory usage. 
+* `torch.bfloat16` - It offers the same dynamic range as `float32`, with much faster performance on Tenstorrent hardware and lower bandwidth and memory usage. 
 * `cc = CompilerConfig()` - This is for TT-Torch's compiler. Learn more about the available options in [utils.py](https://github.com/tenstorrent/tt-torch/blob/main/tt_torch/tools/utils.py) 
 * `BackendOptions()` - This lets you choose different options you may want to add when using the TT-Torch compiler, for example if you want to enable async execution or manually cleanup runtime tensors. Learn more about the available options in [backend.py](https://github.com/tenstorrent/tt-torch/blob/main/tt_torch/dynamo/backend.py)
 
