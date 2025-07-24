@@ -101,7 +101,7 @@ def stable_diffusion_demo():
         low_cpu_mem_usage=True,
     )
 
-    # Fix tokenizer handling
+    # Tokenizer handling
     if hasattr(pipe, "tokenizer_2"):
         pipe.tokenizer_2.truncation = True
         pipe.tokenizer_2.padding = True
