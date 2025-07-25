@@ -35,9 +35,9 @@ This section explains how to use HuggingFace to access the model repository and 
 
 10. You are prompted to save your token. Keep it somewhere where you can access it easily since you will need to add it to the code in the next section. Click **Done**.
 
-## Convert HuggingFace Stable Diffusion stable-diffusion.3.5-medium Example to Work With Tenstorrent
+## Original HuggingFace Stable Diffusion stable-diffusion.3.5-medium Code Example
 
-This section provides the original code from the [HuggingFace for **stable-diffusion.3.5-medium**](https://huggingface.co/docs/diffusers/main/en/api/pipelines/stable_diffusion/stable_diffusion_3#usage-example) code example and shows you what is required to convert it to work with TT-Torch. 
+This section provides the original code from the [HuggingFace for **stable-diffusion.3.5-medium**](https://huggingface.co/docs/diffusers/main/en/api/pipelines/stable_diffusion/stable_diffusion_3#usage-example) code example. 
 
 ```python
 import torch
@@ -85,7 +85,13 @@ from tt_torch.tools.utils import CompilerConfig
 from tt_torch.dynamo.backend import BackendOptions
 
 def configure_tenstorrent_backend():
-    cc = CompilerConfig() 
+    cc = CompilerConfig()
+    # set any specific compiler options here (examples listed can improve performance, however constevaling can
+    # cause an out of host memory issue if you do not have enough memory.)
+    # cc.enable_consteval = True
+    # cc.consteval_parameters = True
+
+
     options = BackendOptions() # You can add additional options as needed
     options.compiler_config = cc
     return options
