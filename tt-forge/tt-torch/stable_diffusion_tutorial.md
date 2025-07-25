@@ -86,11 +86,8 @@ from tt_torch.dynamo.backend import BackendOptions
 
 def configure_tenstorrent_backend():
     cc = CompilerConfig()
-    # set any specific compiler options here (examples listed can improve performance, however constevaling can
-    # cause an out of host memory issue if you do not have enough memory.)
-    # cc.enable_consteval = True
-    # cc.consteval_parameters = True
-
+    # set any specific compiler options here 
+    cc.enable_consteval = True
 
     options = BackendOptions() # You can add additional options as needed
     options.compiler_config = cc
