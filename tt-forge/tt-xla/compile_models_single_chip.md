@@ -35,7 +35,7 @@ The general structure is:
 import torch_xla.core.xla_model as xm
 import torch_xla.runtime as xr
 
-# By default torch_xla uses the CPU device so set it to the TT device.
+# By default torch_xla uses the CPU device. The following must be run before acquiring/connecting to a device. 
 xr.set_device_type("TT")
 
 # Connect the device.
@@ -43,9 +43,10 @@ device = xm.xla_device()
 
 # Define compiler options. (You do not need to include all of these.)
 options = {
-    "enable_optimizer": "true",
+    "enable_optimizer": "true", 
     "enable_memory_layout_analysis": "true",
     "enable_l1_interleaved": "true",
+    "enable_bfp8_conversion": "true",
     "enable_fusing_conv2d_with_multiply_pattern": "true",
 }
 
@@ -73,16 +74,15 @@ The following chart lists the aspects of the template that are Tenstorrent speci
 
 | Code | Explanation |
 |------|-------------|
-| import torch_xla.runtime as xr | Imports the Tenstorrent specific runtime module, required to work with Tenstorrent devices. |
-| xr.set_device_type("TT") | Sets the target device to Tenstorrent hardware ("TT"). |
-| options = {...} | Defines a dictionary of TT-XLA compiler flags.|
-| "enable_optimizer": "true" | A TT-XLA compiler flag, it goes in `options = {...}`. Enables TT-XLA compiler optimizations on the computation graph. |
-| "enable_memory_layout_analysis": "true" | A TT-XLA compiler flag, it goes in `options = {...}`. It
-allows for memory layout tuning. |
-| "enable_l1_interleaved": "true" | A TT-XLA compiler flag, it goes in `options = {...}`. It boosts memory access efficiency across cores. |
-| "enable_fusing_conv2d_with_multiply_pattern": "true" | A TT-XLA compiler flag, it goes in `options = {...}`. Enables fusion of Conv2D followed by Multiply into a single operation to reduce op count and memory movement. |
-| torch_xla.set_custom_compile_options(options) | This command globally registers any compiler options you select| 
-| model.compile(backend="tt") | A Tenstorrent specific method for compiling models. |
+| `xr.set_device_type("TT")` | Sets the target device to Tenstorrent hardware ("TT"). |
+| `options = {...}` | Defines a dictionary of TT-XLA compiler flags.|
+| `"enable_optimizer": "true"` | A TT-XLA compiler flag, it goes in `options = {...}`. Enables optimizer passes in MLIR. This includes various optimizations such as improving tensor memory layouts, operation configurations etc. |
+| `"enable_memory_layout_analysis": "true"` | A TT-XLA compiler flag, it goes in `options = {...}`. Enables memory layout analysis to allow sharded memory layouts in optimizer passes. |
+| `"enable_l1_interleaved": "true"` | A TT-XLA compiler flag, it goes in `options = {...}`. Enables L1 interleaved fallback analysis in optimizer passes. This analysis attempts to move tensors from DRAM to L1 memory with interleaved layout when beneficial for performance. |
+| `"enable_bfp8_conversion": "true"`| Enables automatic MLIR graph conversion into block fp8 format. This is supported only when the graph is in bfloat16 format, to avoid loss in precision. The final graph has input and output nodes in bfloat16 and everything else in bfp8. Essentially adding type casts at the beginning and in the end of the graph, while all intermediate results are in bfp8. This bfloat16 wrapping is done because block formats are TT hardware specific, and the user should provide and get tensors of common dtype.|
+| `"enable_fusing_conv2d_with_multiply_pattern": "true"` | A TT-XLA compiler flag, it goes in `options = {...}`. Enables Conv2d fusion with multiply pattern in the TTNN fusing pass.|
+| `torch_xla.set_custom_compile_options(options)` | This command globally registers any compiler options you select. | 
+| `model.compile(backend="tt")` | Equivalent to calling `torch.compile` on a `torch.nn.Module` "model" with the "tt" backend. |
 
 # Compiling a Model for Use with TT-XLA and JAX
 This section provides a simple template for writing code for compiling a model using JAX and TT-XLA. Tenstorrent uses XLA natively to emit XLA HLO, and TT-XLA compiles the HLO just like with PyTorch. 
@@ -116,9 +116,8 @@ The following chart lists the aspects of the template that are Tenstorrent speci
 
 | Code | Explanation |
 |---|---|
-| from tt_jax import serialize_compiled_artifacts_to_disk | Imports a function from Tenstorrent's tt_jax module that takes your JAX model and compiles it for Tenstorrent hardware. |
-| serialize_compiled_artifacts_to_disk(model, input_data, output_prefix="out) | Lowers your model into internal formats used by the compiler, collects internal compiler representations such as HLO, MLIR, or TT-IR, and saves these artifacts to disk. This is not required to run a model, but it gives you access to the compilation details, which can be useful for debugging, performance tuning, deployment, and reproducibility.|
-| jax.jit(model, backend="tt") | The backend="tt" argument explictly tells JAX to use the TT-XLA compiler to generate code for Tenstorrent hardware. |
+| `serialize_compiled_artifacts_to_disk(model, input_data, output_prefix="out)` | Lowers your model into internal formats used by the compiler, collects internal compiler representations such as HLO, MLIR, or TT-IR, and saves these artifacts to disk. This is not required to run a model, but it gives you access to the compilation details, which can be useful for debugging, performance tuning, deployment, and reproducibility.|
+| `jax.jit(model, backend="tt")` | The backend="tt" argument explictly tells JAX to use the TT-XLA compiler to generate code for Tenstorrent hardware. |
 
 
 
