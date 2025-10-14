@@ -5,19 +5,7 @@ This tutorial explains how to write code to compile models for execution on Tens
 The TT-XLA frontend supports: 
 
 * **PyTorch** - A robust, flexible framework for building, training, and deploying neural networks and other machine learning models. 
-* **JAX** - A Python framework that combines a NumPy-like API for array manipulation with composable function transformations for automatic differentiation, vectorization, and just-in-time (JIT) compilation using XLA for acceleration on GPUs and TPUs. 
-
-# Choosing Between JAX and PyTorch 
-
-| | PyTorch | JAX |
-|--|--|--|
-| Programming Paradigm | Object-oriented with dynamic graphs | Functional with static graphs after JIT compilation |
-| Automatic Differentiation | Uses a backward() method on the loss | Uses function transformations like grad to return gradient functions|
-| State Management | Manages state within objects | Requires explicit state passing |
-| Performance Optimization | Relies on highly optimized C++ backends and a mature ecosystem for performance | Leverages JIT compilation and XLA for potentially higher performance, especially on TPUs | 
-| Ecosystem and Community | More established, broaded ecosystem with more pre-built solutions | Growing ecosystem, often used for cutting-edge research | 
-
-Both are good choices, PyTorch is more beginner friendly as it's more established, allows for rapid prototyping, and offers many pre-built solutions. JAX is best for maximum performance, fine-grained control, and its functional programming style for complex numerical computations and machine learning research. 
+* **JAX** - A Python framework that combines a NumPy-like API for array manipulation with composable function transformations for automatic differentiation, vectorization, and just-in-time (JIT) compilation using XLA for acceleration on Tenstorrent hardware, GPUs, and TPUs. 
 
 # System Configuration 
 
@@ -41,7 +29,7 @@ xr.set_device_type("TT")
 # Connect the device.
 device = xm.xla_device() 
 
-# Define compiler options. (You do not need to include all of these.)
+# Define compiler options. (You do not need to include all of these. See the chart below for further details.)
 options = {
     "enable_optimizer": "true", 
     "enable_memory_layout_analysis": "true",
