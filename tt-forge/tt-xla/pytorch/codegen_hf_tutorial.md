@@ -46,59 +46,67 @@ This section takes the code sample from the last section and shows you what chan
 
 * `tokenizer.pad_token_id` is set - This ensures the input is all of the same fixed length. Without this change, every time input of a different length is encountered, it triggers a recompile. When the max number of recompilations is reached, the compiler will give up on compiling the function, resulting in a warning message. The model still runs, but in eager mode, which is much slower. 
 * `torch.bfloat16` - It offers the same dynamic range as `float32`, with much faster performance on Tenstorrent hardware and lower bandwidth and memory usage. 
-* `cc = CompilerConfig()` - This is for TT-Torch's compiler. Learn more about the available options in [utils.py](https://github.com/tenstorrent/tt-torch/blob/main/tt_torch/tools/utils.py) 
-* `BackendOptions()` - This lets you choose different options you may want to add when using the TT-Torch compiler, for example if you want to enable async execution or manually cleanup runtime tensors. Learn more about the available options in [backend.py](https://github.com/tenstorrent/tt-torch/blob/main/tt_torch/dynamo/backend.py)
+* `torch_xla.set_custom_compile_options({...})` - For details about the compiler, refer to [compiler_config.py](https://github.com/tenstorrent/tt-xla/blob/main/tests/infra/testers/compiler_config.py)
 
 ```python
 # SPDX-FileCopyrightText: (c) 2025 Tenstorrent AI ULC
 #
 # SPDX-License-Identifier: Apache-2.0
+
 # https://huggingface.co/docs/transformers/v4.53.2/en/model_doc/codegen#usage-example
+
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from tt_torch.dynamo.backend import BackendOptions, CompilerConfig
+
+import torch_xla
+import torch_xla.core.xla_model as xm
+import torch_xla.runtime as xr
 
 def codegen_demo():
-
     checkpoint = "Salesforce/codegen-350M-mono"
 
-    # This model does not set tokenizer.pad_token_id, adding it is best practice to 
-    # minimize warnings, improve performance, and avoid unexpected behavior.
+    # Set up XLA runtime for TT backend
+    xr.set_device_type("TT")
+
+    # Optional: Configure codegen options
+    torch_xla.set_custom_compile_options({
+        "backend": "codegen_py",
+        "export_path": "codegen_codegen",  # Adjust path as needed
+    })
+
+    # Load tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token_id = tokenizer.eos_token_id
 
-    # Tenstorrent uses torch.bfloat16
     model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.bfloat16)
-    model.config.pad_token_id = tokenizer.pad_token_id 
+    model.config.pad_token_id = tokenizer.pad_token_id
 
+    # Move model to XLA device
+    device = xm.xla_device()
+    model = model.to(device)
+    model.eval()
+
+    # Prepare input
     text = "def hello_world():"
     inputs = tokenizer(text, return_tensors="pt")
     for k, v in inputs.items():
         if v.dtype == torch.float32:
             inputs[k] = v.to(torch.bfloat16)
+        inputs[k] = inputs[k].to(device)
 
-    # Initialize the compiler configuration
-    torch._dynamo.reset() # Reset the compiler from previous tests/demos
-    cc = CompilerConfig()
-    # Set any specific compiler options here
-    # For example, cc.dump_info = True
-
-    # Initialize the backend options with the compiler configuration
-    options = BackendOptions()
-    options.compiler_config = cc
-
-    # Compile the whole model
-    model = torch.compile(model, backend="tt", options=options)
-
-    # Setting max_new_tokens is optional
-    completion = model.generate(**inputs, max_new_tokens=9, pad_token_id=model.config.pad_token_id)
+    # Run inference (this will trigger compilation/codegen)
+    completion = model.generate(
+        **inputs,
+        max_new_tokens=9,
+        pad_token_id=model.config.pad_token_id,
+    )
 
     print(tokenizer.decode(completion[0]))
-    torch._dynamo.reset() # Reset the compiler for the next test/demo
 
 if __name__ == "__main__":
     codegen_demo()
+
 ```
 
 An easy way to run this code is to do the following: 
