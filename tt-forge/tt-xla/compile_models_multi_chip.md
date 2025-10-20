@@ -9,17 +9,17 @@ To set up multi-chip execution, you need to:
 * Use collective communication operations across chips 
 
 If you want to try a simpler compilation process using a single chip and either JAX or PyTorch, please see:
-* [Compiling Models in PyTorch and JAX Using TT-XLA (Single Chip)](#compile_models_single_chip.md)
+* [Compiling Models in PyTorch and JAX Using TT-XLA (Single Chip)](compile_models_single_chip.md)
 
 If you want an example showing tensor parallelism instead of data parallelism, please see:
-* [Compiling JAX Models with TT-XLA for Multi-Chip Execution Using Tensor Parallelism](#compile_multi_chip_w_tensor.md)
+* [Compiling JAX Models with TT-XLA for Multi-Chip Execution Using Tensor Parallelism](compile_multi_chip_w_tensor.md)
 
 >**NOTE:** Training is not covered, this tutorial shows you how to do inference only. 
 
 # System Configuration 
 
 Before you get started with this tutorial, make sure you have:
-* [Configured your Tenstorrent hardware.](https://github.com/tenstorrent/tt-xla/blob/main/docs/src/getting_started.md) 
+* [Configured your Tenstorrent hardware.](https://github.com/tenstorrent/tt-xla/blob/main/docs/src/getting_started.md#configuring-hardware) 
 * Set up your selected environment for working with TT-XLA. (For this walkthrough, you only need to [install the wheel](https://github.com/tenstorrent/tt-xla/blob/main/docs/src/getting_started.md#installing-a-wheel-and-running-an-example), however you could also choose to setup [Docker](https://github.com/tenstorrent/tt-xla/blob/main/docs/src/getting_started_docker.md) or [build from source](https://github.com/tenstorrent/tt-xla/blob/main/docs/src/getting_started_build_from_source.md). The quickest and simplest option is using the wheel.)
 
 # Check Available Devices (Optional)
