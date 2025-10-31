@@ -8,7 +8,7 @@ For this walkthrough you need:
 * [Getting Started Instructions](getting_started.md) - Make sure you complete the following sections before continuing: 
     * [Configuring Hardware](getting_started.md#configuring-hardware)
     * [Installing a Wheel and Running an Example](getting_started.md#installing-a-wheel-and-running-an-example) - Steps 1-3, 5-6. (You do NOT need to install the packages listed in step 4 for the demo in the getting started instructions.)
-* diffusers Python package
+* `diffusers` Python package
 * Hugging Face account
 
 ## Authenticating With HuggingFace 
