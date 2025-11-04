@@ -48,19 +48,19 @@ When compiling a model for multi-chip execution, the general steps are:
 1. Import JAX and retrieve available device information. 
 2. Setup a logical mesh across your multi-chip system.
 3. Define a simple model (or load an existing one).
-4. Wrap the model with `pjit`. (`jit` is used when you are running on a single device.)
+4. Wrap the model with `jit`.
 5. Use tensor parallelism as the sharding strategy. (This step varies however, in this tutorial, tensor parallelism is shown.)
 
 # Code Sample Showing a Single-Layer MLP and Tensor Parallelism
 
-This code sample uses JAX and Flax to compile and execute a single-layer (dense layer) multi-layer perceptron (MLP) using multiple Tenstorrent chips. The weight matrix and input data are sharded across devices along the feature axis. 
+This code sample uses JAX and Flax to compile and execute a single-layer (dense layer) multi-layer perceptron (MLP) using multiple Tenstorrent chips. The weight matrix and input data are sharded across devices along the feature axis to achieve tensor parallelism. 
 
 You can use this example as a template for your own code. 
 
 The code teaches you: 
 * How to write and compile a tensor-parallel JAX model using TT-XLA
-* How to initialize parameters on CPU and then move to device
-* How to use `pjit`, `Mesh`, and `PartitionSpec` for multi-chip execution
+* How to initialize parameters on CPU and then move them to devices
+* How to create a `Mesh` and use `NamedSharding` for multi-chip execution
 * How to do manual parameter and data sharding (useful for performance control, debugging and matching logical sharding to physical devices)
 
 ```python
@@ -71,16 +71,18 @@ from flax import linen as nn
 from jax import random
 from jax.sharding import Mesh, PartitionSpec as P, NamedSharding
 
-# Define a model with a single Dense layer
+# Define a model with a single Dense layer, weights sharded over devices 
 class ShardedDenseMLP(nn.Module):
-    features: int = 8
+    features: int = 8  # output features
+    axis_name: str = "model"
 
     @nn.compact
     def __call__(self, x):
+        # Shard the kernel weights column-wise (along output features dimension)
         dense = nn.Dense(
             self.features,
             param_dtype=jnp.float32,
-            kernel_init=nn.initializers.lecun_normal(),
+            kernel_init=nn.linear.default_kernel_init,
             use_bias=False,
         )
         return dense(x)
@@ -90,63 +92,65 @@ def initialize_model_cpu(rng_key, input_shape):
     with jax.default_device(jax.devices("cpu")[0]):
         dummy_input = jnp.zeros(input_shape, dtype=jnp.float32)
         params = model.init(rng_key, dummy_input)
+
     return model, params
 
-def make_sharded_forward(model):
+def make_jit_forward(model, mesh):
     def forward(params, x):
         return model.apply(params, x)
 
-    # Using jax.jit instead of pjit
-    return jax.jit(
-        forward,
-        in_shardings=(
-            {  # params sharding
-                "params": {
-                    "Dense_0": {"kernel": P(None, "model")}
+    # Tensor parallelism: shard params along output feature dim ("model" - name of mesh axis)
+    # Shard inputs along feature dim to match
+    in_shardings = (
+        {  # params sharding: shard the kernel matrix along axis 1 (features)
+            'params': {
+                'Dense_0': {
+                    'kernel': NamedSharding(mesh, P(None, 'model'))
                 }
-            },
-            P(None, "model"),  # input
-        ),
-        out_shardings=P(None, "model"),
+            }
+        },
+        NamedSharding(mesh, P()),  # input features replicated
     )
+    out_sharding = NamedSharding(mesh, P(None, "model"))
+    return jax.jit(forward, in_shardings=in_shardings, out_shardings=out_sharding)
 
 def main():
     rng = random.PRNGKey(0)
+
+    # Input shape: (batch, features)
     batch_size = 8
     features = 8
 
     model, params = initialize_model_cpu(rng, (batch_size, features))
 
-    # Set backend (Tenstorrent)
-    os.environ["JAX_PLATFORMS"] = "tt"
-
+    # Create mesh over TT devices (at least 2 devices)
     tt_devices = jax.devices("tt")
     if len(tt_devices) < 2:
         raise RuntimeError("Need at least 2 Tenstorrent devices for this example")
 
+
     mesh_devices = tt_devices[:2]
     mesh = Mesh(mesh_devices, axis_names=("model",))
 
-    # Input data
+    # Initialize input data
     input_data = jnp.ones((batch_size, features), dtype=jnp.float32)
-    sharding = NamedSharding(mesh, P(None, "model"))
-    input_data = jax.device_put(input_data, sharding)
 
-    # Shard params
+    # Shard params accordingly
     sharded_params = jax.tree.map(
-        lambda x: jax.device_put(x, NamedSharding(mesh, P(None, "model")))
-        if x.ndim > 0 else x,
-        params["params"],
+        lambda x: jax.device_put(x, NamedSharding(mesh, P(None, "model"))) if x.ndim == 2
+               else jax.device_put(x, NamedSharding(mesh, P())),
+        params['params']
     )
     params = {"params": sharded_params}
 
-    sharded_forward = make_sharded_forward(model)
+    jit_forward = make_jit_forward(model, mesh)
 
     with mesh:
-        output = sharded_forward(params, input_data)
+        output = jit_forward(params, input_data)
 
     print("Output:", output)
     print("Output shape:", output.shape)
+
 
 if __name__ == "__main__":
     main()

@@ -55,19 +55,19 @@ When compiling a model for multi-chip execution, the general steps are:
 1. Import JAX and retrieve available device information. 
 2. Setup a logical mesh across your multi-chip system.
 3. Define a simple model (or load an existing one).
-4. Wrap the model with `pjit`. (`jit` is used when you are running on a single device.)
+4. Wrap the model with `jit`.
 5. Use data parallelism as the sharding strategy. (This step varies however, in this tutorial, data parallelism is shown.)
 
 # Code Sample Showing Minimalist MLP Inference and Data Parallelism
 
-This code sample creates a minimalist multi-layer perceptron (MLP) inference example with Flax that you initialize on CPU, then execute across two Tenstorrent chips using `pjit`. The model includes two dense layers with a ReLU activation in between. The input batch is sharded over a 1D data mesh, while parameters are replicated across devices.
+This code sample creates a minimalist multi-layer perceptron (MLP) inference example with Flax and JAX, initialized on CPU, then executed across two Tenstorrent chips using `jax.jit` with sharded inputs. The model includes one dense layer. The input batch is sharded over a 1D data mesh, while parameters are replicated across devices.
 
 The code teaches you:
-* How to write a model in Flax (`nn.Module`)
-* How to initialize on CPU to avoid TT errors
+* How to define a model in Flax (`nn.Module`)
+* How to initialize parameters on CPU to avoid Tenstorrent device RNG limitations
 * How to move data and parameters to TT devices 
-* How to use `pjit` and `Mesh` to shard inputs across TT chips 
-* How to run a compiled inference pass using TT 
+* How to use `Mesh` and `NamedSharding` to shard inputs across TT chips 
+* How to compile and run inference on Tenstorrent hardware using `jax.jit`.
 
 You can use this sample as a template for creating your own code. 
 
@@ -77,23 +77,16 @@ import jax.numpy as jnp
 from flax import linen as nn
 from jax import random
 from jax.sharding import Mesh, PartitionSpec as P, NamedSharding
-from jax.experimental.pjit import pjit
-import os
-
-# Optional: Force TT backend
-os.environ["JAX_PLATFORMS"] = "tt"
 
 # ---------------------------
 # 1. Simple MLP Model
 # ---------------------------
 class SimpleMLP(nn.Module):
-    features: int = 8
-
+    features: int = 14
     @nn.compact
     def __call__(self, x):
         x = nn.Dense(self.features)(x)
-        x = nn.relu(x)
-        x = nn.Dense(self.features)(x)
+
         return x
 
 # ---------------------------
@@ -107,18 +100,16 @@ def initialize_model_cpu(rng_key, input_shape):
     return model, params
 
 # ---------------------------
-# 3. pjit-wrapped forward pass
+# 3. jit-wrapped forward pass
 # ---------------------------
-def make_pjit_forward(model):
-
-    def forward(params, x):
-        return model.apply(params, x)
-
-    return pjit(
+def make_jit_forward(model, mesh):
+      def forward(params, x):
+          return model.apply(params, x)
+      return jax.jit(
         forward,
-        in_shardings=(None, P("data")),   # No param sharding, batch sharded
-        out_shardings=P("data")
-    )
+        in_shardings=(NamedSharding(mesh, P()), NamedSharding(mesh, P("data"))),
+        out_shardings=NamedSharding(mesh, P("data"))
+      )
 
 # ---------------------------
 # 4. Main
@@ -126,35 +117,33 @@ def make_pjit_forward(model):
 def main():
     rng = random.PRNGKey(0)
     input_shape = (8, 8)  # batch = 8 (will shard across 2 chips)
-
     # Initialize model on CPU
     model, params = initialize_model_cpu(rng, input_shape)
 
     # Prepare data
     input_data = jnp.ones(input_shape, dtype=jnp.float32)
-
+    
     # Create 1D mesh over TT devices (2 chips)
     tt_devices = jax.devices("tt")
     if len(tt_devices) < 2:
         raise RuntimeError("Need at least 2 TT devices for this example.")
-
     mesh = Mesh(tt_devices[:2], axis_names=("data",))
-
-    # Shard input
+    
+    # Shard input data
     sharding = NamedSharding(mesh, P("data"))
     input_data = jax.device_put(input_data, sharding)
 
-    # pjit forward
-    pjit_forward = make_pjit_forward(model)
-
+    # jit-compiled forward pass
+    jit_forward = make_jit_forward(model, mesh)
+    print("Running forward pass on Tenstorrent devices...")
     with mesh:
-        output = pjit_forward(params, input_data)
-
+        output = jit_forward(params, input_data)
     print("Output:", output)
     print("Output shape:", output.shape)
 
 if __name__ == "__main__":
     main()
+
 ```
 
 Elements of the code that are Tenstorrent-specific are described in the following chart: 
@@ -164,7 +153,7 @@ Elements of the code that are Tenstorrent-specific are described in the followin
 | `os.environ["JAX_PLATFORMS"] = "tt"` | This forces JAX to compile and run the model using the Tenstorrent backend (`tt`). TT-XLA registers itself as a JAX backend named `tt`. If you do not include this, JAX defaults to CPU or GPU and does not use Tenstorrent. |
 | `tt_devices = jax.devices("tt")` | Using this with `tt` retrieves information about what Tenstorrent devices are available. |
 | `with jax.default_device(jax.devices("cpu")[0]) ... params = model.init(rng_key, dummy_input)` | While this snippet is not Tenstorrent-specific, the way it is used is. Tenstorrent does not currently support random number generation on device, so this code shows how to have parameter initialization happen on the CPU. It can then be moved to Tenstorrent for execution. |
-| ```mesh = Mesh(tt_devices[:2], axis_names=("data",)) pjit_forward = pjit(..., in_shardings=(None, P("data")), ...)``` | `pjit` is a standard JAX tool. This code snippet is called out because Tenstorrent's backend has limited sharding support. Primarily, data parallelism is supported. | 
+| ```mesh = Mesh(tt_devices[:2], axis_names=("data",))``` and ```NamedSharding(mesh, P("data"))``` | Creates a 1D mesh for data parallelism. Input data is sharded across TT devices, while parameters are replicated. | 
 
 >**NOTE:** JAX and TT-XLA is currently the best way to run multi-chip workloads on Tenstorrent hardware. 
 
