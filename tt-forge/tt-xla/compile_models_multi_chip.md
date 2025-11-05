@@ -5,7 +5,7 @@ This tutorial explains how to write code to compile models for execution on Tens
 To set up multi-chip execution, you need to:
 * Define a mesh of devices
 * Explain how to split the work
-* Use tools like `shard_map` and `PartitionSpec` to control data and computation sharding instead of `shard_map`. 
+* Use tools like `NamedSharding` and `PartitionSpec` to control data and computation sharding. 
 * Use collective communication operations across chips 
 
 If you want to try a simpler compilation process using a single chip and either JAX or PyTorch, please see:
