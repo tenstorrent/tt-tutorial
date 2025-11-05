@@ -5,7 +5,7 @@ This tutorial explains how to write code to compile models for execution on Tens
 To set up multi-chip execution, you need to:
 * Define a mesh of devices
 * Explain how to split the work
-* Use tools like `shard_map` and `PartitionSpec` to control data and computation sharding
+* Use tools like `NamedSharding` and `PartitionSpec` to control data and computation sharding. 
 * Use collective communication operations across chips 
 
 If you want to try a simpler compilation process using a single chip and either JAX or PyTorch, please see:
@@ -150,7 +150,6 @@ Elements of the code that are Tenstorrent-specific are described in the followin
 
 | Code | Explanation |
 |---|---|
-| `os.environ["JAX_PLATFORMS"] = "tt"` | This forces JAX to compile and run the model using the Tenstorrent backend (`tt`). TT-XLA registers itself as a JAX backend named `tt`. If you do not include this, JAX defaults to CPU or GPU and does not use Tenstorrent. |
 | `tt_devices = jax.devices("tt")` | Using this with `tt` retrieves information about what Tenstorrent devices are available. |
 | `with jax.default_device(jax.devices("cpu")[0]) ... params = model.init(rng_key, dummy_input)` | While this snippet is not Tenstorrent-specific, the way it is used is. Tenstorrent does not currently support random number generation on device, so this code shows how to have parameter initialization happen on the CPU. It can then be moved to Tenstorrent for execution. |
 | ```mesh = Mesh(tt_devices[:2], axis_names=("data",))``` and ```NamedSharding(mesh, P("data"))``` | Creates a 1D mesh for data parallelism. Input data is sharded across TT devices, while parameters are replicated. | 

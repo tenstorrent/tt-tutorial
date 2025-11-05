@@ -74,7 +74,6 @@ from jax.sharding import Mesh, PartitionSpec as P, NamedSharding
 # Define a model with a single Dense layer, weights sharded over devices 
 class ShardedDenseMLP(nn.Module):
     features: int = 8  # output features
-    axis_name: str = "model"
 
     @nn.compact
     def __call__(self, x):
@@ -99,8 +98,6 @@ def make_jit_forward(model, mesh):
     def forward(params, x):
         return model.apply(params, x)
 
-    # Tensor parallelism: shard params along output feature dim ("model" - name of mesh axis)
-    # Shard inputs along feature dim to match
     in_shardings = (
         {  # params sharding: shard the kernel matrix along axis 1 (features)
             'params': {
@@ -160,7 +157,6 @@ Elements of the code that are Tenstorrent-specific are described in the followin
 
 | Code | Explanation | 
 |---|---| 
-| `os.environ["JAX_PLATFORMS"] = "tt"` | Force JAX to use the Tenstorrent backend. Without `tt`, JAX defaults to the CPU or GPU backend. |
 | `jax.devices("tt")` | Required to create a device mesh on Tenstorrent hardware only. | 
 | `Mesh(mesh_devices, axis_names=("model",))` / `NamedSharding(mesh, P(None, "model"))`| Sharding over multiple Tenstorrent devices requires a `Mesh` object to tell JAX how to distribute computation and data across chips. | 
 | `PartitionSpec(None, "model")` | Tenstorrent currently supports only certain sharding patterns, for example data parallelism using the batch dimension. For tensor parallelism, you can shard along the model or output dimension. | 
